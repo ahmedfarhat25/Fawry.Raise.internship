@@ -27,3 +27,30 @@ A Java-based e-commerce system implementation for FawryRise Journey program, fol
   - Weight-based calculations
 
 ## System Architecture
+# 📦 Fawry E-Commerce System Architecture
+
+com.FawryRise.Journey
+├── model/
+│   ├── Customer.java
+│   ├── Cart.java
+│   └── ProductInCart.java
+├── payment/
+│   ├── PaymentInterface.java
+│   └── PseudoPayment.java
+├── product/
+│   ├── DigitalProduct.java
+│   ├── ExpirableProductInterface.java
+│   ├── Shippable.java
+│   └── ShippableProduct.java
+├── shipping/
+│   ├── ExpressShipping.java
+│   ├── PseudoShipping.java
+│   ├── ShippingStrategy.java
+│   └── StandardShipping.java
+├── observer/
+│   ├── EmailNotification.java
+│   ├── OrderObserver.java
+│   ├── OrderSubject.java
+│   └── SMSNotification.java
+└── service/
+    └── (Service classes)
