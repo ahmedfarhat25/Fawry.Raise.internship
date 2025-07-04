@@ -27,9 +27,9 @@ A Java-based e-commerce system implementation for FawryRise Journey program, fol
   - Weight-based calculations
 
 ## System Architecture
-# 📦 Fawry E-Commerce System Architecture
 
-# 📦 Ecommerce Clean Architecture Project
+
+# 📦 Ecommerc Architecture Project
 
 ## 🧱 Project Structure
 ```
