@@ -1,4 +1,5 @@
 package com.FawryRise.Journey.model.Customer;
+import com.FawryRise.Journey.model.Customer;
 
 import java.util.ArrayList;
 import java.util.List;

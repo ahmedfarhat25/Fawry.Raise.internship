@@ -1,0 +1,99 @@
+package com.FawryRise.Journey.service;
+
+import com.FawryRise.Journey.model.*;
+import com.FawryRise.Journey.product.*;
+
+public class CheckoutServices{
+    public void checkout(Customer customer, Cart cart) {
+        // Validate cart not empty
+        if (cart.getProducts().isEmpty()) {
+            throw new IllegalStateException("Cannot checkout empty cart");
+        }
+
+        // Validate stock and expiry
+        for (ProductInCart item : cart.getProducts()) {
+            if (item.getProduct() instanceof Expirable) {
+                Expirable expirable = (Expirable) item.getProduct();
+                if (expirable.isExpired()) {
+                    throw new IllegalStateException("Product " + item.getProduct().getName() + " is expired");
+                }
+                if (item.getQuantity() > ((ExpirableProduct)item.getProduct()).getQuantity()) {
+                    throw new IllegalStateException("Insufficient stock for " + item.getProduct().getName());
+                }
+            }
+        }
+
+        // Calculate totals
+        double subtotal = //... calculation
+        double shipping = //... calculation
+        double total = subtotal + shipping;
+
+        // Validate balance
+        if (customer.getBalance() < total) {
+            throw new IllegalStateException("Insufficient balance");
+        }
+
+        // Process payment
+        customer.deductBalance(total);
+
+        // Update stock
+        for (ProductInCart item : cart.getProducts()) {
+            if (item.getProduct() instanceof ExpirableProduct) {
+                ((ExpirableProduct)item.getProduct()).reduceQuantity(item.getQuantity());
+            }
+        }
+
+        // Print receipt
+        printReceipt(cart, subtotal, shipping, total);
+
+        // Process shipping
+        processShipping(cart);
+    }
+
+    private void printReceipt(Cart cart, double subtotal, double shipping, double total) {
+        System.out.println("** Checkout receipt **");
+        cart.getProducts().forEach(item ->
+                System.out.println(item.getQuantity() + "x " + item.getProduct().getName() + " " +
+                        (item.getProduct().getPrice() * item.getQuantity())));
+        System.out.println("----------------------");
+        System.out.println("Subtotal " + subtotal);
+        System.out.println("Shipping " + shipping);
+        System.out.println("Amount " + total);
+        System.out.println("END.");
+    }
+
+    private void processShipping(Cart cart) {
+        List<ShippableItem> shippableItems = new ArrayList<>();
+
+        cart.getProducts().stream()
+                .filter(item -> item.getProduct() instanceof Shippable)
+                .forEach(item -> {
+                    Shippable product = (Shippable) item.getProduct();
+                    shippableItems.add(new ShippableItem(
+                            product.getName(),
+                            product.getWeight() * item.getQuantity()
+                    ));
+                });
+
+        if (!shippableItems.isEmpty()) {
+            System.out.println("** Shipment notice **");
+            shippableItems.forEach(item ->
+                    System.out.println(item.getQuantity() + "x " + item.getName() + " " + item.getWeight() + "g"));
+            double totalWeight = shippableItems.stream().mapToDouble(ShippableItem::getWeight).sum();
+            System.out.println("Total package weight " + (totalWeight/1000) + "kg");
+        }
+    }
+
+    private static class ShippableItem {
+        private String name;
+        private double weight;
+
+        public ShippableItem(String name, double weight) {
+            this.name = name;
+            this.weight = weight;
+        }
+
+        public String getName() { return name; }
+        public double getWeight() { return weight; }
+    }
+}
